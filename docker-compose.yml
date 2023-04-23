@@ -1,0 +1,90 @@
+version: "3.7"
+services:
+  round-robin-service:
+    build: round-robin
+    container_name: round-robin-service
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/application/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - coda-network
+  application-service-replica1:
+    build: application
+    container_name: application-service-replica1
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/application/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    depends_on:
+      round-robin-service:
+        condition: service_healthy
+    expose:
+      - "8081"
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT: "8081"
+      SERVICE_NAME: application-api-8081
+      SERVICE_BASE-URL: http://application-service-replica1:8081
+      REGISTER-SERVER_URL: http://round-robin-service:8080/register
+    networks:
+      - coda-network
+  application-service-replica2:
+    build: application
+    container_name: application-service-replica2
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/application/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    depends_on:
+      application-service-replica1:
+        condition: service_healthy
+    expose:
+      - "8082"
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: "8082"
+      SERVICE_NAME: application-api-8082
+      SERVICE_BASE-URL: http://application-service-replica2:8082
+      REGISTER-SERVER_URL: http://round-robin-service:8080/register
+    networks:
+      - coda-network
+  application-service-replica3:
+    build: application
+    container_name: application-service-replica3
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/application/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    depends_on:
+      application-service-replica2:
+        condition: service_healthy
+    expose:
+      - "8083"
+    ports:
+      - "8083:8083"
+    environment:
+      SERVER_PORT: "8083"
+      SERVICE_NAME: application-api-8083
+      SERVICE_BASE-URL: http://application-service-replica3:8083
+      REGISTER-SERVER_URL: http://round-robin-service:8080/register
+    networks:
+      - coda-network
+networks:
+  coda-network:
+    name: coda-network
+    driver: bridge

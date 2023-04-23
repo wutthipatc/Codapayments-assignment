@@ -1,0 +1,63 @@
+{
+	"info": {
+		"_postman_id": "efa1fb18-0d5f-40a6-abac-d976506e1353",
+		"name": "Coda payments",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "External api",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"game\": \"ROV\",\n    \"gamerID\": \"TestId\",\n    \"points\": 2.5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/application",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"application"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change application config",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"processingDuration\": 1100,\n    \"slowDuration\": 1000,\n    \"resetIsSlowDuration\": 10000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/configuration",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"configuration"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

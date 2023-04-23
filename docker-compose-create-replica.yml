@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+  application-service-replica:
+    build: application
+    container_name: application-service-replica${REPLICA_NUM}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:${REPLICA_PORT}/application/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    expose:
+      - ${REPLICA_PORT}
+    ports:
+      - ${REPLICA_PORT}:${REPLICA_PORT}
+    environment:
+      SERVER_PORT: ${REPLICA_PORT}
+      SERVICE_NAME: application-api-${REPLICA_PORT}
+      SERVICE_BASE-URL: http://application-service-replica${REPLICA_NUM}:${REPLICA_PORT}
+      REGISTER-SERVER_URL: http://round-robin-service:8080/register
+    networks:
+      coda-network:
+        aliases:
+          - application-service-replica-${REPLICA_NUM}
+networks:
+  coda-network:
+    name: coda-network
+    external: true
+#  REPLICA_NUM=4 REPLICA_PORT=8084 docker-compose -f docker-compose-create-replica.yml up
